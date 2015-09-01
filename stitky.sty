@@ -1,0 +1,107 @@
+\RequirePackage[absolute]{textpos}
+\ProvidesPackage{stitky}
+%deklarace proměnných
+\newdimen\stitekwidth % delka stitku
+\newdimen\stitekheigth
+\newdimen\stitekxsep
+\newdimen\stitekysep
+\newbox\stitek
+\newcount\stitekxpos
+\newcount\stitekypos
+\newcount\stitekfont
+\newcount\stitekxmax
+\newcount\stitekymax
+\newcount\stitekfonttmp
+\newcount\stitekfontmin
+\newcount\stiteksucces
+
+\def\stitekfontstyle{\bfseries }
+%nastaveni hodnot promennych
+\setlength{\unitlength}{1cm}
+\stitekwidth=3.5cm%38mm%3.5cm
+\stitekheigth=21.2mm%1.26cm
+\stitekxsep=0mm%.44cm
+\stitekysep=0mm%.25cm
+\stitekfont=24
+\stitekfontmin=8
+\stitekxpos=0
+\stitekypos=0
+\stitekxmax=5
+\stitekymax=12%8
+\setlength{\TPHorizModule}{38mm}%{41mm}
+\setlength{\TPVertModule}{21.2mm}%{16mm}
+\textblockorigin{1.3cm}{1.8cm}%{5.6mm}{6.3mm}
+\newdimen\stitekmargin
+\newcommand\stitky[1]{
+\stitekfonttmp=\stitekfont
+\fontsize{\stitekfonttmp}{\stitekfonttmp}
+\selectfont
+\let\next=\stitekopak \next{#1}
+%\vtop to \stitekxpos{\hbox to \stitekypos{\box\stitek}}
+\begin{textblock}{1}(\stitekxpos,\stitekypos)
+\stitekmargin=\TPVertModule
+\advance\stitekmargin by -\ht\stitek
+\divide\stitekmargin by 2
+  \box\stitek
+  \end{textblock}
+\global\advance\stitekypos by 1
+\ifnum \stitekypos>\stitekymax \newcolumn
+\fi
+%\the\stitekxpos
+%\the\stitekypos
+}
+\newcommand\stiteknewpage{
+  \null\newpage
+  \global\stitekypos=0
+  \global\stitekxpos=0
+}
+\newcommand\newcolumn{
+  \global\advance\stitekxpos by 1
+  \ifnum\stitekxpos>\stitekxmax \stiteknewpage \else \global\stitekypos=0 \fi
+}
+\newcommand\stitekopak[1]{
+\stiteksucces=0
+\linewidth=\stitekwidth
+\setbox\stitek=\vbox{\hbox{\stitekfontstyle #1}}
+\ifdim\wd\stitek<\stitekwidth \let\next=\relax
+\PackageWarningNoLine{Stitky}{Stitek #1 is \the\wd\stitek wide, fontsize is \the\stitekfonttmp}
+\stiteksucces=1
+%\unvbox\stitek
+\else
+\advance\stitekfonttmp by -1
+\ifnum\stitekfonttmp<\stitekfontmin
+\PackageWarningNoLine{Stitky}{Error: message #1 is too wide}{}
+\setbox\stitek=\vbox{\hbox{Error!}}
+\let\next=\relax
+\fi
+\fontsize{\stitekfonttmp}{\stitekfonttmp}
+\selectfont
+\fi
+\ifnum \stiteksucces=1
+\next
+\else
+\next{#1}
+\fi
+}
+\def\@stitek#1;{
+  \stitky{#1}
+}
+\newcount\curr
+\newcount\finalcount
+\newcommand\stiteksekvence[3]{
+  \curr=#2
+  \finalcount=\numexpr #2+#3+1\relax
+  \loop\ifnum\curr<\finalcount \stitky{#1\the\curr}\advance\curr by 1 \repeat
+}
+
+\newcommand\stitkycti[1]{
+    \newread\vstup
+    \immediate\openin\vstup= #1
+    \loop
+      \read\vstup to \radek
+      \ifeof\vstup
+      \else
+        \expandafter\@stitek\radek;
+    \repeat % ukonci \loop
+    \closein\vstup
+}
