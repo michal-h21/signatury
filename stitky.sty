@@ -26,24 +26,24 @@
 \stitekfontmin=8
 \stitekxpos=0
 \stitekypos=0
-\stitekxmax=5
+\stitekxmax=4
 \stitekymax=12%8
 \setlength{\TPHorizModule}{38mm}%{41mm}
 \setlength{\TPVertModule}{21.2mm}%{16mm}
 \textblockorigin{1.3cm}{1.8cm}%{5.6mm}{6.3mm}
 \newdimen\stitekmargin
-\newcommand\stitky[1]{
-\stitekfonttmp=\stitekfont
-\fontsize{\stitekfonttmp}{\stitekfonttmp}
-\selectfont
-\let\next=\stitekopak \next{#1}
+\newcommand\stitky[1]{%
+\stitekfonttmp=\stitekfont%
+\fontsize{\stitekfonttmp}{\stitekfonttmp}%
+\selectfont%
+\let\next=\stitekopak \next{#1}%
 %\vtop to \stitekxpos{\hbox to \stitekypos{\box\stitek}}
 \begin{textblock}{1}(\stitekxpos,\stitekypos)
 \stitekmargin=\TPVertModule
 \advance\stitekmargin by -\ht\stitek
 \divide\stitekmargin by 2
   \box\stitek
-  \end{textblock}
+  \end{textblock}\allowbreak
 \global\advance\stitekypos by 1
 \ifnum \stitekypos>\stitekymax \newcolumn
 \fi
